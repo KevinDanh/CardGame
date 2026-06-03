@@ -2,7 +2,7 @@ include MakefileRules.mk
 .PHONY: all debug run
 
 TARGET  := cardgame.exe
-SRCS    := main.cpp CardGame.cpp
+SRCS    := main.cpp CardGame.cpp Player.cpp
 OBJS    := $(SRCS:.cpp=.o)
 DEPS    := $(SRCS:.cpp=.d)
 

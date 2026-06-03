@@ -36,7 +36,7 @@ void CardGame::start(){
 }
 
 void CardGame::shuffle(){
-    std::cout << "Shuffling Deck..." << "\n"; 
+    std::cout << "Shuffling Deck..." << "\n";
     std::shuffle(deck_.begin(), deck_.end(), std::mt19937(std::random_device{}()));
 }
 
@@ -86,12 +86,12 @@ void CardGame::score(){
     // Get all hand sizes
     int maxScore = 0;
     for ( Player& player : players_ ){
-        maxScore = std::max(maxScore, player.handValue());
+        maxScore = std::max(maxScore, player.getHandValue());
     }
 
     std::vector<Player> winners;
     for ( Player& player : players_ ){
-        if ( player.handValue() == maxScore ){
+        if ( player.getHandValue() == maxScore ){
             winners.push_back(player);
         }
     }
@@ -160,7 +160,6 @@ void CardGame::resetHands(){
 }
 
 void CardGame::printScores(){
-    std::cout << "Sc" << "\n";
     std::cout << std::setw(8) << std::left << "Name" << " | " << "Score" << "\n";
     for(auto& [player, score] : scores_){
         std::cout << player << " : " << score << "\n";
