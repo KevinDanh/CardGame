@@ -36,7 +36,6 @@ void Player::clearHand(){
     cards_.clear();
 }
 
-
 int Player::getHandValue(){
     int handValue = 0;
     for ( int card : cards_ ){

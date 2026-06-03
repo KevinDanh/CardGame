@@ -1,37 +1,32 @@
 #pragma once
 
 #include <vector>
-#include <algorithm>
-#include <random>
 #include <string>
 #include <iostream>
 
 #include "Player.h"
+#include "Deck.h"
 
 class CardGame {
 public:
-    CardGame(int numPlayers);
+    CardGame(int numPlayers, int maxScore);
     ~CardGame() = default;
 
     void start();
-    void shuffle();
-    void dealOne(Player& player);
-    void dealUntilFull(Player& player);
     void deal();
     void exchange();
     void initScores();
     void score();
-    void printDeck();
-    void resetHands();
+    void reset();
     void printScores();
 
 private:
+    int maxScore_;
     bool gameOver_ = false;
-    std::vector<Player> players_;
-    std::vector<int> deck_;
     int cardsInPlay_ = 0;
+    Deck deck_;
+    std::vector<Player> players_;
     std::unordered_map<std::string, int> scores_;
 
-    void createDeck();
     void addPlayers(int numPlayers);
 };

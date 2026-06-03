@@ -2,7 +2,8 @@
 #include <iostream>
 #include <iomanip>
 
-CardGame::CardGame(int numPlayers){
+CardGame::CardGame(int numPlayers, int maxScore){
+    maxScore_ = maxScore;
     addPlayers(numPlayers);
     initScores();
 };
@@ -15,11 +16,8 @@ void CardGame::start(){
     // Loop phases until Player reaches winner
 
     while (!gameOver_){
-        // Create new Deck
-        createDeck();
-
         // Phase 1: Shuffle Deck
-        shuffle();
+        deck_.shuffle();
 
         // Phase 2: Deal Cards
         deal();
@@ -31,28 +29,7 @@ void CardGame::start(){
         score();
 
         // Reset Hands
-        resetHands();
-    }
-}
-
-void CardGame::shuffle(){
-    std::cout << "Shuffling Deck..." << "\n";
-    std::shuffle(deck_.begin(), deck_.end(), std::mt19937(std::random_device{}()));
-}
-
-void CardGame::dealOne(Player& player){
-    if ( player.handSize() < 5 ){
-        player.drawCard(deck_.back());
-        deck_.pop_back();
-        cardsInPlay_++;
-    }
-}
-
-void CardGame::dealUntilFull(Player& player){
-    while ( player.handSize() < 5 ){
-        player.drawCard(deck_.back());
-        deck_.pop_back();
-        cardsInPlay_++;
+        reset();
     }
 }
 
@@ -61,7 +38,8 @@ void CardGame::deal(){
     int expectedCards = 5 * players_.size();
     while ( cardsInPlay_ != expectedCards){
         for ( Player& player : players_){
-            dealOne(player);
+            deck_.dealOne(player);
+            cardsInPlay_++;
         }
     }
 }
@@ -72,7 +50,7 @@ void CardGame::exchange(){
     for ( Player& player : players_ ){
         int cardsDiscarded = player.discardCards();
         cardsInPlay_ -= cardsDiscarded;
-        dealUntilFull(player);
+        deck_.dealUntilFull(player);
     }
 }
 
@@ -104,7 +82,7 @@ void CardGame::score(){
     }
 
     for ( auto& [playerName, score] : scores_ ) {
-        if ( score == 5 ) {
+        if ( score == maxScore_ ) {
             std::cout << "We have a winner!" << "\n";
             std::cout << playerName << " is the champ!!!!" << "\n";
             printScores();
@@ -113,13 +91,18 @@ void CardGame::score(){
     }
 }
 
-void CardGame::printDeck(){
-    std::cout << "Printing Deck..." << "\n";
-    for (size_t i=0; i < deck_.size(); i++){
-        std::cout << deck_[i] << " ";
-        if ( i % 10 == 0 ){
-            std::cout << "\n";
-        }
+void CardGame::reset(){
+    for ( Player& player : players_ ){
+        player.clearHand();
+    }
+    cardsInPlay_ = 0;
+    deck_ = Deck();
+}
+
+void CardGame::printScores(){
+    std::cout << std::setw(8) << std::left << "Name" << " | " << "Score" << "\n";
+    for(auto& [player, score] : scores_){
+        std::cout << player << " : " << score << "\n";
     }
 }
 
@@ -128,40 +111,5 @@ void CardGame::addPlayers(int numPlayers){
     for(int i=0; i < numPlayers; i++){
         players_.push_back(Player("Player " + std::to_string(i)));
         std::cout << players_[i].name() << " joined the game. \n";
-    }
-}
-
-void CardGame::createDeck(){
-    std::cout << "Creating Deck..." << "\n";
-    deck_.reserve(52); // Standard 52-card deck
-    constexpr int SUITS = 4; // Heart, Spades, Diamond, Clove
-    constexpr int FACE_CARDS = 4; // 10, J, Q, K
-    for(int i=0; i < SUITS; i++){
-        
-        // Add A-9
-        for(int i=1; i <= 9; i++){
-            deck_.push_back(i);
-        }
-
-        // Add 10, J, Q, K
-        for(int i=0; i < FACE_CARDS; i++){
-            deck_.push_back(10);
-        }
-
-        deck_.push_back(i);
-    }
-}
-
-void CardGame::resetHands(){
-    for ( Player& player : players_ ){
-        player.clearHand();
-        cardsInPlay_ = 0;
-    }
-}
-
-void CardGame::printScores(){
-    std::cout << std::setw(8) << std::left << "Name" << " | " << "Score" << "\n";
-    for(auto& [player, score] : scores_){
-        std::cout << player << " : " << score << "\n";
     }
 }
