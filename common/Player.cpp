@@ -1,5 +1,6 @@
 #include "Player.h"
 #include <iostream>
+#include <algorithm>
 
 Player::Player(std::string name){
     name_ = name;

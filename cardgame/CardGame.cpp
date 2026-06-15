@@ -28,8 +28,13 @@ void CardGame::start(){
         // Phase 4: Scoring Phase
         score();
 
-        // Reset Hands
-        reset();
+        // Phase 5: Check for winner
+        if (gameOver()){
+            gameOver_ = true;
+        } else {
+            // Reset Hands
+            reset();
+        }
     }
 }
 
@@ -61,34 +66,38 @@ void CardGame::initScores(){
     }
 }
 void CardGame::score(){
-    // Get all hand sizes
+    // Calculate highest hand score
+    std::vector<Player> winners;
     int maxScore = 0;
     for ( Player& player : players_ ){
-        maxScore = std::max(maxScore, player.getHandValue());
-    }
-
-    std::vector<Player> winners;
-    for ( Player& player : players_ ){
+        if (player.getHandValue() > maxScore ){
+            maxScore = player.getHandValue();
+            winners.clear();
+        } 
         if ( player.getHandValue() == maxScore ){
             winners.push_back(player);
         }
     }
 
-    if ( winners.size() == 1 ) {
+    if ( winners.size() > 1 ) {
+        std::cout << "Tie occured. No points were scored." << "\n";
+    } else {
         std::cout << winners[0].name() << " won this round!" << "\n";
         scores_[winners[0].name()]++;
-    } else {
-        std::cout << "Tie occured. No points were scored." << "\n";
     }
+}
 
+bool CardGame::gameOver(){
+     // Determine if player has won the game
     for ( auto& [playerName, score] : scores_ ) {
         if ( score == maxScore_ ) {
             std::cout << "We have a winner!" << "\n";
             std::cout << playerName << " is the champ!!!!" << "\n";
             printScores();
-            gameOver_ = true;
+            return true;
         }
     }
+    return false;
 }
 
 void CardGame::reset(){

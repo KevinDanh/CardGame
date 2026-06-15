@@ -19,6 +19,7 @@ public:
     void score();
     void reset();
     void printScores();
+    bool gameOver();
 
 private:
     int maxScore_;
